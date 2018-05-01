@@ -1,5 +1,7 @@
 ---
 - hosts: all
+  vars:
+    yum_repo_url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/config_file.repo?os=${os}&dist=${dist}&source=script
   tasks:
     - name: Install required packages
       yum:
