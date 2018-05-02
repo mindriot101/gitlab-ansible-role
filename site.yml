@@ -2,14 +2,17 @@
 - hosts: all
   vars:
     - gitlab_url: http://vagranthost
-    - yum_repo_url: https://packages.gitlab.com/gitlab/gitlab-ee/el/7/$basearch
   tasks:
-    - name: Add the yum repo
-      yum_repository:
-        name: gitlab
-        description: Gitlab repository
-        baseurl: "{{ yum_repo_url }}"
+    - name: Install default gpg keys
+      rpm_key:
+        key: "{{ item }}"
+        state: present
+      with_items:
+        - /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+        - /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Debug-7
+        - /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Testing-7
       become: yes
+
     - name: Install required packages
       yum:
         name: "{{ item }}"
@@ -40,14 +43,6 @@
         - http
       become: yes
       notify: restart firewalld
-
-    - name: Install gitlab
-      yum:
-        name: gitlab-ee
-        state: present
-      become: yes
-      environment:
-        - EXTERNAL_URL: "{{ gitlab_url }}"
 
   handlers:
     - name: restart firewalld
