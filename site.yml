@@ -44,6 +44,25 @@
       become: yes
       notify: restart firewalld
 
+    - name: Copy official install script
+      copy:
+        src: script.rpm.sh
+        dest: /tmp/script.rpm.sh
+
+    - name: Install gitlab using official shell script
+      command: sh /tmp/script.rpm.sh
+      args:
+        creates: /etc/yum.repos.d/gitlab_gitlab-ee.repo
+      become: yes
+
+    - name: Install gitlab
+      yum:
+        name: gitlab-ee
+        state: present
+      become: yes
+      environment:
+        EXTERNAL_URL: http://vagranthost
+
   handlers:
     - name: restart firewalld
       service:
