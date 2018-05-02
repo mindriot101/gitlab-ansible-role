@@ -1,8 +1,17 @@
 ---
 - hosts: all
   vars:
-    yum_repo_url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/config_file.repo?os=${os}&dist=${dist}&source=script
+    - yum_repo_url: https://packages.gitlab.com/gitlab/gitlab-ee/el/7/$basearch
   tasks:
+    - name: Ping the system
+      ping:
+  tasks:
+    - name: Add the yum repo
+      yum_repository:
+        name: gitlab
+        description: Gitlab repository
+        baseurl: "{{ yum_repo_url }}"
+      become: yes
     - name: Install required packages
       yum:
         name: "{{ item }}"
@@ -21,6 +30,7 @@
       with_items:
         - sshd
       become: yes
+
 
     - name: Allow ports through the firewall
       firewalld:
